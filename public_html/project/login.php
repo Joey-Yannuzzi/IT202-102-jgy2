@@ -29,7 +29,7 @@ if (isset($_POST["email"]) && isset($_POST["password"])) {
     //TODO 3
     $hasError = false;
     if (empty($email)) {
-        echo "Email must not be empty";
+        flash("Email must not be empty");
         $hasError = true;
     }
 
@@ -45,22 +45,22 @@ if (isset($_POST["email"]) && isset($_POST["password"])) {
     $email = sanitize_email($email);
     if (!is_valid_email($email))
     {
-        echo "Invalid email address";
+        flash("Invalid email address");
         $hasError = true;
     }
 
     if (empty($password)) {
-        echo "password must not be empty";
+        flash("password must not be empty");
         $hasError = true;
     }
     if (strlen($password) < 8) {
-        echo "Password too short";
+        flash("Password too short");
         $hasError = true;
     }
     if (!$hasError) {
 
         $db = getDB();
-        $stmt = $db->prepare("SELECT email, password from Users where email = :email");
+        $stmt = $db->prepare("SELECT id, email, username, password from Users where email = :email");
 
         try
         {
@@ -74,18 +74,18 @@ if (isset($_POST["email"]) && isset($_POST["password"])) {
                     unset($user["password"]);
                     if (password_verify($password, $hash))
                     {
-                        echo "Weclome $email\n";
+                        //flash("Weclome $email");
                         $_SESSION["user"] = $user;
                         die(header("Location: home.php"));
                     }
                     else
                     {
-                        echo "invalid password\n";
+                        flash("invalid password");
                     }
                 }
                 else
                 {
-                    echo "Email not found\n";
+                    flash("Email not found");
                 }
             }
         }
@@ -96,4 +96,6 @@ if (isset($_POST["email"]) && isset($_POST["password"])) {
 
     }
 }
+
+require(__DIR__ . "/../../partials/flash.php");
 ?>
