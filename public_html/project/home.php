@@ -4,9 +4,11 @@ require(__DIR__."/../../partials/nav.php");
 <h1>Home</h1>
 <?php
 if(is_logged_in()){
- echo "Welcome, " . $_SESSION["user"]["email"]; 
+ flash("Welcome, " . get_username()); 
 }
 else{
-  echo "You're not logged in";
+  flash("You're not logged in");
 }
+
+require(__DIR__ . "/../../partials/flash.php");
 ?>

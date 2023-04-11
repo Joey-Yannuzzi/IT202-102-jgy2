@@ -7,6 +7,10 @@
         <input type="email" name="email" required />
     </div>
     <div>
+        <label for = "username">Username</label>
+        <input type = "text" name = "username" required maxlength = "30"/>
+    </div>
+    <div>
         <label for="pw">Password</label>
         <input type="password" id="pw" name="password" required minlength="8" />
     </div>
@@ -30,11 +34,12 @@
         $email = se($_POST, "email", "", false);
         $password = se($_POST, "password", "", false);
         $confirm = se($_POST, "confirm", "", false);
+        $username = se($_POST, "username", "", false);
 
         $hasError = false;
         if (empty($email))
         {
-            echo "Email must not be empty";
+            flash("Email must not be empty");
             $hasError = true;
         }
 
@@ -49,28 +54,33 @@
         $email = sanitize_email($email);
         if (!is_valid_email($email))
         {
-            echo "Invalid email address";
+            flash("Invalid email address");
             $hasError = true;
         }
 
         if (empty($password))
         {
-            echo "Password must not be empty";
+            flash("Password must not be empty");
             $hasError = true;
         }
         if (empty($confirm))
         {
-            echo "Confirm password must not be empty";
+            flash("Confirm password must not be empty");
             $hasError = true;
         }
         if (strlen($password) < 8)
         {
-            echo "Password too short";
+            flash("Password too short");
             $hasError = true;
         }
         if (strlen($password) > 0 && $password != $confirm)
         {
-            echo "Passwords must match";
+            flash("Passwords must match");
+            $hasError = true;
+        }
+        if (!preg_match('/^[a-z0-9_-]{3,30}$/', $username))
+        {
+            flash("Username must be lowercase, alphanumberical, and contain only contain _ or -", "warning");
             $hasError = true;
         }
 
@@ -78,18 +88,19 @@
         {
             $hash = password_hash($password, PASSWORD_BCRYPT);
             $db = getDB();
-            $stmt = $db->prepare("INSERT INTO Users(email, password) VALUES (:email, :password)");
+            $stmt = $db->prepare("INSERT INTO Users(email, password, username) VALUES (:email, :password, :username)");
 
             try
             {
-                $r = $stmt->execute([":email" => $email, ":password" => $hash]);
-                echo "Successfully Registered\n";
+                $r = $stmt->execute([":email" => $email, ":password" => $hash, ":username" => $username]);
+                flash("Successfully Registered", "success");
             }
             catch (Exception $e)
             {
-                echo "There was an error registering\n";
-                echo "<pre>" . var_export($e, true) . "</pre>";
+                users_check_duplicate($e->errorInfo);
             }
         }
     }
+
+    require(__DIR__ . "/../../partials/flash.php");
 ?>
