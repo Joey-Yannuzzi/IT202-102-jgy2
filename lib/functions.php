@@ -1,6 +1,6 @@
 <?php
 require_once(__DIR__ . "/db.php");
-$BASE_PATH = '/public_html/project/';
+$BASE_PATH = '/project';
 
 //require safer_echo.php
 require(__DIR__ . "/safer_echo.php");
