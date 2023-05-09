@@ -2,14 +2,7 @@
     require_once(__DIR__ . "/../../../lib/functions.php");
     error_log("save_score received data: " . var_export($_REQUEST, true));
     
-    if (isset($_POST["score"]))
-    {
-        $score = (int)se($_POST, "score", 0, false);
-    }
-    else
-    {
-        $score = -1;
-    }
+    $score = (int)se($_POST, "score", 0, false);
 
     $standalone_enabled = true;
 
