@@ -216,6 +216,23 @@ async function endGame() {
   context.font = '18px Arial';
 
   console.log(score);
+  postData(
+    {
+        score
+    },
+    "api/save_score.php"
+  ).then(data =>
+  {
+    console.log(data);
+    if (data.status === 200) {
+        //saved successfully
+        alert(data.message);
+        } else {
+        //some error occurred, maybe want to handle it before resetting
+        alert(data.message);
+        }
+  })
+  /*var data = {score};
   const response = await fetch("/public_html/project/api/save_score.php", {
         method: 'POST', // *GET, POST, PUT, DELETE, etc.
         mode: 'cors', // no-cors, *cors, same-origin
@@ -228,20 +245,20 @@ async function endGame() {
         redirect: 'follow', // manual, *follow, error
         referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
         body: {
-            "score": score
+            'score': score
         }
-    }).then(data =>
+    }).then(response.json() =>
     {
-        console.log(data);
+        console.log(response);
         //quick, brief example (you wouldn't want to use alert)
-        if (data.status === 200) {
+        if (response.status === 200) {
         //saved successfully
             alert("Saved Score");
         } else {
             //some error occurred, maybe want to handle it before resetting
             alert("Error");
         }
-    });
+    });*/
   context.fillText('Click to Play Again', canvas.width / 2, (canvas.height / 4) * 3);
   canvas.addEventListener('click', startGame);
 }
