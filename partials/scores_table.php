@@ -37,7 +37,7 @@ switch ($duration) {
 ?>
 <br>
                 <?php se($title); ?>
-            <table class = "center">
+            <table>
                 <?php if (count($results) == 0) : ?>
                     <p>No results to show</p>
                 <?php else : ?>
@@ -45,13 +45,13 @@ switch ($duration) {
                         <?php if ($index == 0) : ?>
                             <thead>
                                 <?php foreach ($record as $column => $value) : ?>
-                                    <th class = "center"><?php se($column); ?></th>
+                                    <th><?php se($column); ?></th>
                                 <?php endforeach; ?>
                             </thead>
                         <?php endif; ?>
                         <tr>
                             <?php foreach ($record as $column => $value) : ?>
-                                <td class = "center"><?php se($value, null, "N/A"); ?></td>
+                                <td><?php se($value, null, "N/A"); ?></td>
                             <?php endforeach; ?>
                         </tr>
                     <?php endforeach; ?>
