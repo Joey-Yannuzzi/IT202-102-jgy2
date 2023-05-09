@@ -39,6 +39,7 @@ require(__DIR__ . "/../lib/functions.php");
         <?php endif; ?>
         <?php if (is_logged_in()): ?>
             <li><a href="logout.php">Logout</a></li>
+            <li><a href = "game.php">Game</a></li>
         <?php endif; ?>
     </ul>
 </nav>
