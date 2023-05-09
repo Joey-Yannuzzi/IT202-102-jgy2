@@ -45,13 +45,13 @@ switch ($duration) {
                         <?php if ($index == 0) : ?>
                             <thead>
                                 <?php foreach ($record as $column => $value) : ?>
-                                    <th><?php se($column); ?></th>
+                                    <th class = "center"><?php se($column); ?></th>
                                 <?php endforeach; ?>
                             </thead>
                         <?php endif; ?>
                         <tr>
                             <?php foreach ($record as $column => $value) : ?>
-                                <td><?php se($value, null, "N/A"); ?></td>
+                                <td class = "center"><?php se($value, null, "N/A"); ?></td>
                             <?php endforeach; ?>
                         </tr>
                     <?php endforeach; ?>
