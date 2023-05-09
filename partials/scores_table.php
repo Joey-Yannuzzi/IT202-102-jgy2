@@ -35,9 +35,8 @@ switch ($duration) {
         break;
 }
 ?>
-<br>
                 <?php se($title); ?>
-            <table style = "margin-left:auto;margin-right:auto">
+            <table>
                 <?php if (count($results) == 0) : ?>
                     <p>No results to show</p>
                 <?php else : ?>
