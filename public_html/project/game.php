@@ -1,7 +1,8 @@
+<!DOCTYPE html>
 <?php
 require(__DIR__ . "/../../partials/nav.php");
 ?>
-<!DOCTYPE html>
+
 <html>
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -21,6 +22,7 @@ var canvas = document.getElementById('canvas');
 // Get the canvas drawing context
 var context = canvas.getContext('2d');
 var scores = [];
+var gameData = GameData();
 
 // Create an object representing a square on the canvas
 function makeSquare(x, y, length, speed) {
@@ -101,6 +103,8 @@ function menu() {
 
 // Start the game
 function startGame() {
+    //document.getElementById("string").innerHTML = "";
+    //document.getElementById("score").innerHTML = "";
     score = 0;
     timeBetweenEnemies = 5 * 1000;
     enemyBaseSpeed = 2;
@@ -115,8 +119,82 @@ function startGame() {
   canvas.removeEventListener('click', startGame);
 }
 
+async function postData(data = {}, url = "/Project/api/game-backend.php") {
+
+console.log(Object.keys(data).map(function(key) {
+    return "" + key + "=" + data[key]; // line break for wrapping only
+}).join("&"));
+let example = 1;
+if (example === 1) {
+    // Default options are marked with *
+    const response = await fetch(url, {
+        method: 'POST', // *GET, POST, PUT, DELETE, etc.
+        mode: 'cors', // no-cors, *cors, same-origin
+        cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+        credentials: 'same-origin', // include, *same-origin, omit
+        headers: {
+            //'Content-Type': 'application/json'
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        redirect: 'follow', // manual, *follow, error
+        referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+        body: Object.keys(data).map(function(key) {
+            return "" + key + "=" + data[key]; // line break for wrapping only
+        }).join("&") //JSON.stringify(data) // body data type must match "Content-Type" header
+    });
+    return response.json(); // parses JSON response into native JavaScript objects
+} else if (example === 2) {
+    //making XMLHttpRequest awaitable
+    //https://stackoverflow.com/a/48969580
+    return new Promise(function(resolve, reject) {
+        let xhr = new XMLHttpRequest();
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        xhr.open("POST", url);
+        xhr.onload = function() {
+            if (this.status >= 200 && this.status < 300) {
+                resolve(xhr.response);
+            } else {
+                reject({
+                    status: this.status,
+                    statusText: xhr.statusText
+                });
+            }
+        };
+        xhr.onerror = function() {
+            reject({
+                status: this.status,
+                statusText: xhr.statusText
+            });
+        };
+        xhr.send(Object.keys(data).map(function (key) {
+        return "" + key + "=" + data[key]; // line break for wrapping only
+    }).join("&"));
+    });
+} else if (example === 3) {
+    //make jQuery awaitable
+    //https://petetasker.com/using-async-await-jquerys-ajax
+    //check if jQuery is present
+    if (window.$) {
+        let result;
+
+        try {
+            result = await $.ajax({
+                url: url,
+                type: 'POST',
+                data: Object.keys(data).map(function (key) {
+        return "" + key + "=" + data[key]; // line break for wrapping only
+    }).join("&")
+            });
+
+            return result;
+        } catch (error) {
+            console.error(error);
+        }
+    }
+}
+}
 // Show the end game screen
-function endGame() {
+async function endGame() {
     scores.push(score);
 	// Stop the spawn interval
   clearInterval(timeoutId);
@@ -136,6 +214,34 @@ function endGame() {
     context.fillText('High Score: ' + scoreCheck(), canvas.width / 2, canvas.height / 4);
   }
   context.font = '18px Arial';
+
+  console.log(score);
+  const response = await fetch("/public_html/project/api/save_score.php", {
+        method: 'POST', // *GET, POST, PUT, DELETE, etc.
+        mode: 'cors', // no-cors, *cors, same-origin
+        cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+        credentials: 'same-origin', // include, *same-origin, omit
+        headers: {
+            //'Content-Type': 'application/json'
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        redirect: 'follow', // manual, *follow, error
+        referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+        body: {
+            "score": score
+        }
+    }).then(data =>
+    {
+        console.log(data);
+        //quick, brief example (you wouldn't want to use alert)
+        if (data.status === 200) {
+        //saved successfully
+            alert("Saved Score");
+        } else {
+            //some error occurred, maybe want to handle it before resetting
+            alert("Error");
+        }
+    });
   context.fillText('Click to Play Again', canvas.width / 2, (canvas.height / 4) * 3);
   canvas.addEventListener('click', startGame);
 }
@@ -292,6 +398,16 @@ function draw() {
     window.requestAnimationFrame(draw);
   }
 }
+
+function GameData() {
+        return {
+            score: 0,
+            AddPoints: function(p) {
+                this.score += p;
+                document.getElementById("score").innerText = "Score: " + this.score;
+            }
+        }
+    }
 
 // Start the game
 menu();
